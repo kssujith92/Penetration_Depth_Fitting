@@ -14,10 +14,10 @@ Yd=data(:,2);
 
 m=get_model();
 
-defin={'3.5','2','1','2550'}; %default initial values
+defin={'5','2','1','2550'}; %default initial values
 %pars=[Tc,gr,dC,lam0(A)]
 LB=[0,0,0,500];    %lower bounds
-UB=[5,5,5,10000];    %upper bounds
+UB=[10,5,5,10000];    %upper bounds
 
 [x,vars,C,in]=get_inputs(defin);
 lb=double(LB(vars));ub=double(UB(vars));
@@ -49,7 +49,7 @@ opts = optimoptions('fmincon','Display','final');
 par={T,Yd,vars,C,in,En,m};
 [x,err,~,~,L,~,H] = fmincon(@(x) calculate_error(x,par),x,[],[],[],[],lb,ub,[],opts);
 V=zeros(1,4);
-V(vars)=abs(x);V(in)=C;
+V(vars)=x;V(in)=C;
 V=num2cell(V);
 [Tc,gr,dC,lam0]=deal(V{:}); %values for best fit
 Y=1./((Yd/lam0)+1).^2;
@@ -64,7 +64,7 @@ dV=num2cell(dV);
 if(any(vars==4))
     Tt=T(T<Tc);Ydt=Yd(1:length(Tt));
     x=lam0;
-    [x,R,J]=nlinfit(Tt,Ydt,@(x,Tt)calculate_lamda(x,Tt,gr,Tc,dC,m),x);
+    [x,R,J]=nlinfit(Tt,Ydt,@(x,Tt)calculate_lamda(x,Tt,V,En,m),x);
     ci = nlparci(x,R,'jacobian',J);
     dlam0=(ci(1,2)-ci(1,1))/2; %error bar for lamda0
 end
