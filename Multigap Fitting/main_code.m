@@ -6,7 +6,7 @@
 
 close all;
 
-%[name,path,check]= uigetfile('.dat','Import delta_lamda data from');
+[name,path,check]= uigetfile('.txt','Import delta_lamda data from');
 
 data = importdata(fullfile(path,name));
 
@@ -15,10 +15,10 @@ Yd=data(:,2);
 
 m=get_model();
 
-defin={'2550','3.5','1','1','0.5','3','2'}; %default initial values
+defin={'2550','5','1','1','0.5','3','2'}; %default initial values
 %pars=[lam0,Tc,gr1,dC1,r,gr2,dC2]
 LB=[500,0,0,0,0,0,0];    %lower bounds
-UB=[10000,5,5,5,1,5,5];    %upper bounds
+UB=[10000,15,5,5,1,5,5];    %upper bounds
 
 [x,vars,C,in]=get_inputs(defin);
 lb=double(LB(vars));ub=double(UB(vars));
@@ -65,7 +65,7 @@ dV=num2cell(dV);
 if(any(vars==1))
     Tt=T(T<Tc);Ydt=Yd(1:length(Tt));
     x=lam0;
-    [x,R,J]=nlinfit(Tt,Ydt,@(x,Tt)calculate_lamda(x,Tt,gr1,Tc,dC1,r,gr2,dC2,En,m),x);
+    [x,R,J]=nlinfit(Tt,Ydt,@(x,Tt)calculate_lamda(x,Tt,V,En,m),x);
     ci = nlparci(x,R,'jacobian',J);
     dlam0=(ci(1,2)-ci(1,1))/2; %error bar for lamda0
 end

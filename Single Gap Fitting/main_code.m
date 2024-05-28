@@ -6,7 +6,7 @@
 
 close all;
 
-%[name,path,check]= uigetfile('.txt','Import delta_lamda data from');
+[name,path,check]= uigetfile('.txt','Import delta_lamda data from');
 
 data = importdata(fullfile(path,name));
 T=data(:,1);
